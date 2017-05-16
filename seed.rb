@@ -11,12 +11,12 @@ require 'sqlite3'
 
 db = SQLite3::Database.new("homework07.sqlite3.db")
 
-[ "villains", "teams", "powers", "colors", "superheroes"].each do |table_name|
+[ "villains", "teams", "powers", "colors", "superheroes", "colors_superheroes", "powers_superheroes"].each do |table_name|
   db.execute("DELETE FROM #{table_name};")
   db.execute("DELETE FROM SQLITE_SEQUENCE WHERE name=\'#{table_name}\'")
 end
 
-[ "The Joker", "Bane", "Lex Luthor" ].each do |villain_name|
+[ "The Joker", "Bane", "Lex Luthor", "Voldemort", "Loki" ].each do |villain_name|
   db.execute("INSERT INTO villains(name) VALUES( ? );", villain_name)
 end
 

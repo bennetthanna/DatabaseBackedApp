@@ -49,23 +49,42 @@ end
 if selection == 'A'
   puts "Add a new #{table_name}"
   if table_name == "superheroes"
-    # print "Name: "
-    # superhero_name = gets.chomp
+    print "Name: "
+    superhero_name = gets.chomp
+    # should only print out villains that are not associated with a superhero already
+    # due to the uniqueness constraint
     puts "Nemesis: "
-    villains = db.execute("SELECT * FROM villains")
+    villains = db.execute("SELECT * FROM villains LEFT JOIN superheroes ON superheroes.villain_id = villains.id
+                           WHERE superheroes.villain_id IS NULL");
     villains.each do |villain|
       puts villain[0].to_s + ". " + villain[1].to_s
     end
-    # superhero_nemesis = gets.chomp
-    puts "Colors: "
+    superhero_nemesis = gets.chomp
+    puts "Team: "
+    teams = db.execute("SELECT * FROM teams")
+    teams.each do |team|
+      puts team[0].to_s + ". " + team[1].to_s
+    end
+    superhero_team = gets.chomp
+    puts "Colors: (input as comma a comma separated string)"
     colors = db.execute("SELECT * FROM colors")
     colors.each do |color|
       puts color[0].to_s + ". " + color[1].to_s
     end
-    puts "Powers: "
+    superhero_colors = gets.split(',')
+    puts "Powers: (input as a comma separated string)"
     powers = db.execute("SELECT * FROM powers")
     powers.each do |power|
       puts power[0].to_s + ". " + power[1].to_s
+    end
+    superhero_powers = gets.split(',')
+    db.execute("INSERT INTO superheroes(name, villain_id, team_id) VALUES(\"#{superhero_name}\", #{superhero_nemesis}, #{superhero_team})")
+    inserted_id = db.execute("SELECT id FROM superheroes WHERE name=\"#{superhero_name}\"").join()
+    superhero_colors.each do |color|
+      db.execute("INSERT INTO colors_superheroes(color_id, superhero_id) VALUES(#{color}, #{inserted_id})")
+    end
+    superhero_powers.each do |power|
+      db.execute("INSERT INTO powers_superheroes(power_id, superhero_id) VALUES(#{power}, #{inserted_id})")
     end
   else
     print "Name: "
