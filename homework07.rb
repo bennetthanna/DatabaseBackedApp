@@ -1,5 +1,11 @@
 require 'sqlite3'
 
+def print_options(list)
+  list.each do |value|
+    puts value[0].to_s + ". " + value[1].to_s
+  end
+end
+
 db = SQLite3::Database.new("homework07.sqlite3.db")
 
 tables = {1 => "superheroes", 2 => "villains", 3 => "teams", 4 => "powers", 5 => "colors"}
@@ -7,7 +13,7 @@ tables = {1 => "superheroes", 2 => "villains", 3 => "teams", 4 => "powers", 5 =>
 puts "Welcome to the superheroes archive!"
 
 tables.each do |key, value|
-    puts key.to_s + '. ' + value.capitalize
+  puts key.to_s + '. ' + value.capitalize
 end
 
 print "Your command: " 
@@ -31,15 +37,13 @@ if table_name == "superheroes"
     puts "\n"
   end
 else
-  select_query = "SELECT * FROM #{table_name};"
-  results = db.execute(select_query)
+  results = db.execute("SELECT * FROM #{table_name};")
   results.each do |row|
     puts row[1]
   end
 end
 
 puts "(A)dd a new " + table_name + ", or (Q)uit"
-
 selection = gets.chomp
 
 if selection == 'Q'
@@ -56,27 +60,19 @@ if selection == 'A'
     puts "Nemesis: "
     villains = db.execute("SELECT * FROM villains LEFT JOIN superheroes ON superheroes.villain_id = villains.id
                            WHERE superheroes.villain_id IS NULL");
-    villains.each do |villain|
-      puts villain[0].to_s + ". " + villain[1].to_s
-    end
+    print_options(villains)
     superhero_nemesis = gets.chomp
     puts "Team: "
     teams = db.execute("SELECT * FROM teams")
-    teams.each do |team|
-      puts team[0].to_s + ". " + team[1].to_s
-    end
+    print_options(teams)
     superhero_team = gets.chomp
     puts "Colors: (input as comma a comma separated string)"
     colors = db.execute("SELECT * FROM colors")
-    colors.each do |color|
-      puts color[0].to_s + ". " + color[1].to_s
-    end
+    print_options(colors)
     superhero_colors = gets.split(',')
     puts "Powers: (input as a comma separated string)"
     powers = db.execute("SELECT * FROM powers")
-    powers.each do |power|
-      puts power[0].to_s + ". " + power[1].to_s
-    end
+    print_options(powers)
     superhero_powers = gets.split(',')
     db.execute("INSERT INTO superheroes(name, villain_id, team_id) VALUES(\"#{superhero_name}\", #{superhero_nemesis}, #{superhero_team})")
     inserted_id = db.execute("SELECT id FROM superheroes WHERE name=\"#{superhero_name}\"").join()
